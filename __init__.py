@@ -291,13 +291,6 @@ class SenseNovaImageGenProvider(ImageGenProvider):
                 aspect_ratio=aspect_ratio,
                 extra={
                     "setup_instructions": [
-                        "方式 1: 在终端设置环境变量",
-                        '  export SENSENOVA_API_KEY="your-api-key"',
-                        "",
-                        "方式 2: 在 config.yaml 中添加",
-                        "  env_vars:",
-                        '    SENSENOVA_API_KEY: "your-api-key"',
-                        "",
                         "获取 API Key: https://platform.sensenova.cn/",
                     ]
                 },
