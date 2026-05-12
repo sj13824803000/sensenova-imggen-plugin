@@ -1,12 +1,16 @@
+# 敏感信息
+.env
+*.env
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-venv/
-.venv/
-env/
+*.egg-info/
+dist/
+build/
 
 # IDE
 .vscode/
@@ -14,14 +18,9 @@ env/
 *.swp
 *.swo
 
-# 敏感信息
-.env
-*.key
-*.pem
-
-# 日志
-*.log
-
 # 系统文件
 .DS_Store
 Thumbs.db
+
+# 插件缓存
+.cache/
