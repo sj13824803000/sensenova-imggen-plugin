@@ -4,8 +4,8 @@
     POST https://token.sensenova.cn/v1/images/generations
 
 配置方式：
-    1. 设置环境变量: export SENSENOVA_API_KEY="your-api-key"
-    2. 或在 config.yaml 中配置 model.api_key
+    1. 启用插件后，首次使用会提示输入 API Key
+    2. 或在终端设置环境变量: export SENSENOVA_API_KEY="your-api-key"
 
 ## 支持的尺寸 (11 种 aspect ratio)
 
@@ -59,7 +59,7 @@ logger = logging.getLogger(__name__)
 
 # 默认使用官方 API
 API_BASE_URL = os.environ.get("SENSENOVA_API_BASE_URL", "https://token.sensenova.cn/v1")
-API_KEY = os.environ.get("SENSENOVA_API_KEY", "")
+
 
 # ---------------------------------------------------------------------------
 # 模型目录
@@ -184,6 +184,10 @@ class SenseNovaImageGenProvider(ImageGenProvider):
     
     支持 11 种尺寸比例:
         16:9, 9:16, 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 21:9, 9:21
+    
+    配置方式:
+        1. 启用插件后首次使用会提示输入 API Key
+        2. 或在终端设置: export SENSENOVA_API_KEY="your-api-key"
     """
 
     @property
@@ -195,8 +199,12 @@ class SenseNovaImageGenProvider(ImageGenProvider):
         return "SenseNova (商汤日日新)"
 
     def is_available(self) -> bool:
-        """检查配置是否可用。"""
-        return bool(API_KEY)
+        """检查配置是否可用。
+        
+        如果 API Key 未设置，返回 False 并提示用户配置。
+        """
+        api_key = os.environ.get("SENSENOVA_API_KEY", "")
+        return bool(api_key)
 
     def list_models(self) -> List[Dict[str, Any]]:
         """返回可用模型目录。"""
@@ -215,12 +223,15 @@ class SenseNovaImageGenProvider(ImageGenProvider):
         return DEFAULT_MODEL
 
     def get_setup_schema(self) -> Dict[str, Any]:
-        """返回插件配置信息，包含支持的尺寸说明。"""
+        """返回插件配置信息，用于交互式配置提示。
+        
+        Hermes 会显示此 schema 引导用户完成配置。
+        """
         return {
             "name": "SenseNova (商汤日日新)",
             "badge": "community",
             "tag": "SenseNova U1 Fast - 11 种尺寸比例",
-            "env_vars": ["SENSENOVA_API_KEY", "SENSENOVA_API_BASE_URL (可选)"],
+            "env_vars": ["SENSENOVA_API_KEY"],
             "extra_info": {
                 "supported_sizes": [
                     {"ratio": "16:9", "resolution": "2752×1536", "alias": "landscape"},
@@ -236,7 +247,12 @@ class SenseNovaImageGenProvider(ImageGenProvider):
                     {"ratio": "9:21", "resolution": "1344×3136", "alias": None},
                 ],
                 "usage": "支持 --aspect 参数指定比例，如: /image prompt --aspect 16:9",
-                "setup": "设置环境变量: export SENSENOVA_API_KEY='your-api-key'",
+                "setup_instructions": [
+                    "启用插件后首次使用会提示输入 API Key",
+                    "或手动设置环境变量: export SENSENOVA_API_KEY='your-api-key'",
+                    "可选: 使用本地 Proxy - export SENSENOVA_API_BASE_URL='http://127.0.0.1:8317/v1'",
+                ],
+                "api_endpoint": "POST https://token.sensenova.cn/v1/images/generations",
             }
         }
 
@@ -265,12 +281,26 @@ class SenseNovaImageGenProvider(ImageGenProvider):
             "data": [{"url": "..."}]
         }
         """
-        if not API_KEY:
+        # 检查 API Key 是否已设置
+        api_key = os.environ.get("SENSENOVA_API_KEY", "")
+        if not api_key:
             return error_response(
-                error="SENSENOVA_API_KEY 环境变量未设置",
+                error="SENSENOVA_API_KEY 环境变量未设置。请先配置 API Key 再使用。",
                 error_type="config_required",
                 provider="sensenova",
                 aspect_ratio=aspect_ratio,
+                extra={
+                    "setup_instructions": [
+                        "方式 1: 在终端设置环境变量",
+                        '  export SENSENOVA_API_KEY="your-api-key"',
+                        "",
+                        "方式 2: 在 config.yaml 中添加",
+                        "  env_vars:",
+                        '    SENSENOVA_API_KEY: "your-api-key"',
+                        "",
+                        "获取 API Key: https://platform.sensenova.cn/",
+                    ]
+                },
             )
 
         prompt = (prompt or "").strip()
@@ -302,7 +332,7 @@ class SenseNovaImageGenProvider(ImageGenProvider):
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {API_KEY}",
+            "Authorization": f"Bearer {api_key}",
         }
 
         logger.info(f"Generating image with SenseNova U1 Fast: size={size_str}")
