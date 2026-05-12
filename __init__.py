@@ -250,9 +250,7 @@ class SenseNovaImageGenProvider(ImageGenProvider):
                 ],
                 "usage": "支持 --aspect 参数指定比例，如: /image prompt --aspect 16:9",
                 "setup_instructions": [
-                    "启用插件后首次使用会提示输入 API Key",
-                    "或手动设置环境变量: export SENSENOVA_API_KEY='your-api-key'",
-                    "可选: 使用本地 Proxy - export SENSENOVA_API_BASE_URL='http://127.0.0.1:8317/v1'",
+                    "启用插件后首次使用会提示输入 API Key"
                 ],
                 "api_endpoint": "POST https://token.sensenova.cn/v1/images/generations",
             }
