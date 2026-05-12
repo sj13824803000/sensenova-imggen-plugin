@@ -7,5 +7,6 @@ kind: backend
 # 通过环境变量或 config.yaml 配置 API 凭据
 # 支持官方 API 和本地 Proxy 两种模式
 requires_env:
-  - SENSENOVA_API_KEY
+  - key: SENSENOVA_API_KEY
+    description: SenseNova API Key
 badge: community
