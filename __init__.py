@@ -231,7 +231,9 @@ class SenseNovaImageGenProvider(ImageGenProvider):
             "name": "SenseNova (商汤日日新)",
             "badge": "community",
             "tag": "SenseNova U1 Fast - 11 种尺寸比例",
-            "env_vars": ["SENSENOVA_API_KEY"],
+            "env_vars": [
+                {"key": "SENSENOVA_API_KEY", "description": "SenseNova API Key"}
+            ],
             "extra_info": {
                 "supported_sizes": [
                     {"ratio": "16:9", "resolution": "2752×1536", "alias": "landscape"},
