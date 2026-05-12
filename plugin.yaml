@@ -1,0 +1,11 @@
+---
+name: sensenova-imggen
+version: 1.2.0
+description: 商汤日日新(SenseNova)文生图模型插件 - 支持 11 种尺寸比例
+author: Hermes User
+kind: backend
+# 通过环境变量或 config.yaml 配置 API 凭据
+# 支持官方 API 和本地 Proxy 两种模式
+requires_env:
+  - SENSENOVA_API_KEY
+badge: community
